@@ -1,0 +1,1 @@
+# QuantumultXTaskCollect
