@@ -613,7 +613,6 @@ async function getExtraAward() {
 }
 //助力好友
 async function masterHelpShare() {
-  return;
   console.log('开始助力好友')
   let salveHelpAddWater = 0;
   let remainTimes = 4;//今日剩余助力次数,默认4次（京东农场每人每天4次助力机会）。
@@ -1280,7 +1279,8 @@ function shareCodesFormat() {
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);
       newShareCodes = shareCodes[tempIndex].split('@');
     }
-    const readShareCodeRes = await readShareCode();
+    // const readShareCodeRes = await readShareCode();
+    const readShareCodeRes = null;
     if (readShareCodeRes && readShareCodeRes.code === 200) {
       // newShareCodes = newShareCodes.concat(readShareCodeRes.data || []);
       newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];

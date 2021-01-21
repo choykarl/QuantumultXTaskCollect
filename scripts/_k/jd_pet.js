@@ -269,7 +269,6 @@ async function masterHelpInit() {
  * 运行脚本时你自己的shareCode会在控制台输出, 可以将其分享给他人
  */
 async function slaveHelp() {
-  return;
   //$.log(`\n因1.6日好友助力功能下线。故暂时屏蔽\n`)
   //return
   let helpPeoples = '';
@@ -479,8 +478,8 @@ function shareCodesFormat() {
       newShareCodes = shareCodes[tempIndex].split('@');
     }
     //因好友助力功能下线。故暂时屏蔽
-    const readShareCodeRes = await readShareCode();
-    //const readShareCodeRes = null;
+    // const readShareCodeRes = await readShareCode();
+    const readShareCodeRes = null;
     if (readShareCodeRes && readShareCodeRes.code === 200) {
       newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
     }
