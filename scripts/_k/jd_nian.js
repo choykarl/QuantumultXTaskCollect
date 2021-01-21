@@ -46,8 +46,8 @@ if ($.isNode()) {
 }
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 const inviteCodes = [
-  `cgxZaDXWZPCmiUa2akPVmFMI27K6antJzucULQPYNim_BPEW1Dwd@cgxZdTXtIrPYuAqfDgSpusxr97nagU6hwFa3TXxnqM95u3ib-xt4nWqZdz8@cgxZdTXtIO-O6QmYDVf67KCEJ19JcybuMB2_hYu8NSNQg0oS2Z_FpMce45g@cgxZdTXtILiLvg7OAASp61meehou4OeZvqbjghsZlc3rI5SBk7b3InUqSQ0@cgxZ9_MZ8gByP7FZ368dN8oTZBwGieaH5HvtnvXuK1Epn_KK8yol8OYGw7h3M2j_PxSZvYA`,
-  `cgxZaDXWZPCmiUa2akPVmFMI27K6antJzucULQPYNim_BPEW1Dwd@cgxZdTXtIrPYuAqfDgSpusxr97nagU6hwFa3TXxnqM95u3ib-xt4nWqZdz8@cgxZdTXtIO-O6QmYDVf67KCEJ19JcybuMB2_hYu8NSNQg0oS2Z_FpMce45g@cgxZdTXtILiLvg7OAASp61meehou4OeZvqbjghsZlc3rI5SBk7b3InUqSQ0@cgxZdTXtIumO4w2cDgSqvYcqHwjaAzLxu0S371Dh_fctFJtN0tXYzdR7JaY`
+  `cgxZLmGCJLLY6BPKCgWu70kTnm0uWy7l07i2o98jneSiJjkLstUDy1cNcPI@cgxZdTXtILiL6AfKCgP6uRubUES8oJC5TBYLlVonlkLRAQtL5weynCRuWMA@cgxZdTXtIrPe7VvKCwehvCLbspfXqt5nH1uJ_CJx2k4it6DtY9DCshRaGUE`,
+  `cgxZLmGCJLLY6BPKCgWu70kTnm0uWy7l07i2o98jneSiJjkLstUDy1cNcPI@cgxZdTXtILiL6AfKCgP6uRubUES8oJC5TBYLlVonlkLRAQtL5weynCRuWMA@cgxZdTXtIrPe7VvKCwehvCLbspfXqt5nH1uJ_CJx2k4it6DtY9DCshRaGUE`
 ];
 !(async () => {
   await requireConfig();
@@ -133,9 +133,12 @@ function showMsg() {
   })
 }
 async function helpFriends() {
-  return;
   for (let code of $.newShareCodes) {
     if (!code) continue
+    if (code == $.mineInviteId) {
+      console.log('!!!!!!!!!!跳过自己!!!!!!!!!!')
+      continue
+    }
     await getFriendData(code)
     await $.wait(1000)
   }
@@ -470,6 +473,7 @@ function getTaskList(body={}) {
               if(JSON.stringify(body)==="{}") {
                 $.taskVos = data.data.result.taskVos;//任务列表
                 console.log(`您的好友助力码为${data.data.result.inviteId}`)
+                $.mineInviteId = data.data.result.inviteId; //自己的id
                }
               // $.userInfo = data.data.result.userInfo;
             }
@@ -823,9 +827,10 @@ function readShareCode() {
   return new Promise(async resolve => {
     $.get({url: `https://code.chiang.fun/api/v1/jd/jdnian/read/${randomCount}/`, 'timeout': 10000}, (err, resp, data) => {
       try {
-        if (err) {
+        if (true) {
           console.log(`${JSON.stringify(err)}`)
           console.log(`${$.name} API请求失败，请检查网路重试`)
+          console.log(`!!!故意的`)
         } else {
           if (data) {
             console.log(`随机取${randomCount}个码放到您固定的互助码后面(不影响已有固定互助)`)
