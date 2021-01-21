@@ -2,6 +2,9 @@
   "name": "jd tasks",
   "description": "",
   "task": [
+    "5 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_pet.js, tag=自己的萌宠, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdmc.png, enabled=true",
+    "10 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_nian.js, tag=自己的年兽, img-url=https://raw.githubusercontent.com/yogayyy/Scripts/main/Icon/lxk0301/jd_nian.png, enabled=true",
+    "15 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_fruit.js, tag=自己的农场, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdnc.png, enabled=true",
     "10 1 * * * https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/scripts/ttwk/ttwk.js, tag=天天挖矿, img-url=https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/image/ttwk.png, enabled=true",
     "11 1 * * * https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/scripts/jd/jd_lotteryMachine.js, tag=京东抽奖机, img-url=https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/image/jdlottery.png, enabled=true",
     "0 0 * * * https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/scripts/jd/jd_baiTiao.js, tag=京东白条, img-url=https://raw.githubusercontent.com/yangtingxiao/QuantumultX/master/image/baitiao.png, enabled=true",
