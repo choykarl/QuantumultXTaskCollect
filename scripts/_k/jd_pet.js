@@ -30,9 +30,9 @@ let cookiesArr = [], cookie = '', jdPetShareArr = [], isBox = false, notify, new
 //下面给出两个账号的填写示例（iOS只支持2个京东账号）
 let shareCodes = [ // IOS本地脚本用户这个列表填入你要助力的好友的shareCode
    //账号一的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'MTAxODc2NTEzNTAwMDAwMDAwMjg3MDg2MA==@MTAxODc2NTEzMzAwMDAwMDAyNzUwMDA4MQ==@MTAxODc2NTEzMjAwMDAwMDAzMDI3MTMyOQ==@MTAxODc2NTEzNDAwMDAwMDAzMDI2MDI4MQ==@MTAxODcxOTI2NTAwMDAwMDAxOTQ3MjkzMw==',
+  '',
   //账号二的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'MTAxODc2NTEzMjAwMDAwMDAzMDI3MTMyOQ==@MTAxODcxOTI2NTAwMDAwMDAyNjA4ODQyMQ==@MTAxODc2NTEzOTAwMDAwMDAyNzE2MDY2NQ==@MTE1NDUyMjEwMDAwMDAwNDI0MDM2MDc=',
+  '',
 ]
 let message = '', subTitle = '', option = {};
 let jdNotify = false;//是否关闭通知，false打开通知推送，true关闭通知推送
@@ -447,7 +447,7 @@ function readShareCode() {
   return new Promise(async resolve => {
     $.get({url: `http://jd.turinglabs.net/api/v2/jd/pet/read/${randomCount}/`, 'timeout': 10000}, (err, resp, data) => {
       try {
-        if (err) {
+        if (true) {
           console.log(`${JSON.stringify(err)}`)
           console.log(`${$.name} API请求失败，请检查网路重试`)
         } else {
@@ -478,8 +478,8 @@ function shareCodesFormat() {
       newShareCodes = shareCodes[tempIndex].split('@');
     }
     //因好友助力功能下线。故暂时屏蔽
-    // const readShareCodeRes = await readShareCode();
-    const readShareCodeRes = null;
+    const readShareCodeRes = await readShareCode();
+    // const readShareCodeRes = null;
     if (readShareCodeRes && readShareCodeRes.code === 200) {
       newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
     }
