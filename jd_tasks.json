@@ -2,7 +2,7 @@
   "name": "jd tasks",
   "description": "",
   "task": [
-    "16 0 * * * https://raw.githubusercontent.com/LXK9301/jd_scripts/master/jd_nian_ar.js, img-url=https://raw.githubusercontent.com/yogayyy/Scripts/main/Icon/lxk0301/jd_nian.png, tag=京东炸年兽AR, enabled=true",
+    "16 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_nian_ar.js, img-url=https://raw.githubusercontent.com/yogayyy/Scripts/main/Icon/lxk0301/jd_nian.png, tag=京东炸年兽AR, enabled=true",
     "5 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_pet.js, tag=自己的萌宠, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdmc.png, enabled=true",
     "10 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_nian.js, tag=自己的年兽, img-url=https://raw.githubusercontent.com/yogayyy/Scripts/main/Icon/lxk0301/jd_nian.png, enabled=true",
     "15 0 * * * https://raw.githubusercontent.com/ChoiKarl/QuantumultXTaskCollect/master/scripts/_k/jd_fruit.js, tag=自己的农场, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdnc.png, enabled=true",
