@@ -7,9 +7,9 @@
 */
 const $ = new Env('天天领白条券');
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
-const printDetail = false;        //是否显示出参详情
+const printDetail = true;        //是否显示出参详情
 let cookieExpire = false;
-let lackCoin = false;
+
 //直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '';
 if ($.isNode()) {
@@ -20,26 +20,6 @@ if ($.isNode()) {
   cookiesArr.push($.getdata('CookieJD'));
   cookiesArr.push($.getdata('CookieJD2'));
 }
-const JR_API_HOST = 'https://jrmkt.jd.com/activity/newPageTake/takePrize';
-let prize =
-  //每日领随机白条券
-  [
-    {name : `prizeDaily`, desc : `天天领`, id : `Q8291646471q5f1V1w362z1d0p299jl`},
-    //周一领
-    {name : `prizeMonday`, desc : `周一领`, id : `Q1295372232228280029Aw`},
-    //周二领
-    {name : `prizeTuesday`, desc : `周二领`, id : `Q9293947555491r1b3U870x0D2V95X`},
-    //周三领
-    {name : `prizeWednesday`, desc : `周三领`, id : `p9w2v180c1o0g1w001101211928QW`},
-    //周四领
-    {name : `prizeThursday`, desc : `周四领`, id : `q9r2C1n0i101001618477923Q1`},
-    //每周五领55-5券
-    {name : `prizeFriday`, desc : `周五领`, id : `Q529284818011r8O2Y8L07082T9kE`},
-    //周六领
-    {name : `prizeSaturday`, desc : `周六领`, id : `i9200831161952186922QB`},
-    //周六领2
-    {name : `prizeSaturday2`, desc : `周六领`, id : `Q4295706b5Q9t2D6F181k3x8Q0v0W2e9JK`}
-  ]
 
 !(async () => {
   if (!cookiesArr[0]) {
@@ -47,38 +27,18 @@ let prize =
     return;
   }
 
-  for (let i = 0; i < prize.length; i++) {
-    prize[i].body =`activityId=${prize[i].id}&eid=${randomWord(false,90).toUpperCase()}&fp=${randomWord(false,32).toLowerCase()}`
-  }
   for (let i = 0; i < cookiesArr.length; i++) {
     cookie = cookiesArr[i];
     if (cookie) {
-      $.prize = {addMsg : ``};
-      $.prize["dailyCoupon"] = "";
-      let date = new Date($.time("yyyy/MM/dd HH:mm:ss"));
       cookieExpire = false;
-      lackCoin = false;
-      await queryCouponsNotGroup()
       if (cookieExpire) {
         $.msg($.name, '提示：请先获取cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/', {"open-url": "https://bean.m.jd.com/"});
         continue;
       }
       await Promise.all([
         queryCouponCenter(),
-        gateFloorById(),
-        queryAwardCenter()
       ])
-      if (date.getHours() > 0) await takePrize(prize[0]);
-      if (date.getDay() !== 0 && date.getHours() >= 8) {
-        await takePrize(prize[date.getDay()],820);//延迟执行，防止提示活动火爆
-        if (date.getDay() === 6) await takePrize(prize[7],820);//第二个周六券
-      }
-
-      if (date.getHours() > 0 && date.getDay() === 0) {
-        $.prize.addMsg = `提　醒：请于今天使用周日专享白条券\n`
-      }
-      if (date.getHours() >= 8) await queryMissionWantedDetail();
-      await msgShow();
+    //   await msgShow();
     }
   }
 })()
@@ -89,116 +49,7 @@ let prize =
     $.done();
   })
 
-
-function takePrize(prize,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: JR_API_HOST,
-        body : prize.body,
-        headers: {
-          'Cookie' : cookie,
-          'X-Requested-With' : `XMLHttpRequest`,
-          'Accept' : `application/json, text/javascript, */*; q=0.01`,
-          'Origin' : `https://jrmkt.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Content-Type' : `application/x-www-form-urlencoded;charset=UTF-8`,
-          'Host' : `jrmkt.jd.com`,
-          'Connection' : `keep-alive`,
-          'Referer' : `https://jrmkt.jd.com/ptp/wl/vouchers.html?activityId=${prize.id}`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.post(url, (err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          $.prize[prize.name] = data;
-          $.prize[prize.name].desc = prize.desc;
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function queryMissionWantedDetail(timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMissionWantedDetail?reqData=%7B%22playId%22:%2281%22,%22channelCode%22:%22MISSIONCENTER%22,%22timeStamp%22:%2${$.time(`yyyy-MM-ddTHH:mm:ss.SZ`)}%22%7D`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/member/task/RewardDetail/?playId=81&platformCode=MISSIONCENTER&channel=baitiao&jrcontainer=h5&jrcloseweb=false`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.post(url, async (err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          switch (data.resultData.data.mission.status ) {
-            case -1 :
-              $.prize.addMsg += `周任务：${data.resultData.data.mission.name}`;
-              await receivePlay(data.resultData.data.mission.missionId);
-              break;
-            case 0 : // 2已完成  -1未领取  0已领取
-              $.prize.addMsg += `周任务：完成进度${data.resultData.data.mission.scheduleNowValue || 0}/${data.resultData.data.mission.scheduleTargetValue}，剩余数量：${data.resultData.data.residueAwardNum || `未知`}\n`
-              break;
-            case 1 : //
-              $.prize.addMsg += `周任务：完成进度${data.resultData.data.mission.scheduleNowValue || 0}/${data.resultData.data.mission.scheduleTargetValue}，剩余数量：${data.resultData.data.residueAwardNum || `未知`}\n`
-              break;
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function receivePlay(missionId,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/mission/h5/m/receivePlay?reqData=%7B%22playId%22:%2281%22,%22channelCode%22:%22MISSIONCENTER%22,%22playType%22:1,%22missionId%22:${missionId},%22timeStamp%22:%22${$.time(`yyyy-MM-ddTHH:mm:ss.SZ`)}%22%7D`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/member/task/RewardDetail/?playId=81&platformCode=MISSIONCENTER&channel=baitiao&jrcontainer=h5&jrcloseweb=false`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.post(url, (err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          $.prize.addMsg += `-${data.resultData.msg.replace(`该任务`,``)}\n`;
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function queryCouponsNotGroup(timeout = 0) {
+function queryCouponCenter(timeout = 0) {
   return new Promise((resolve) => {
     setTimeout( ()=>{
       let url = {
@@ -207,89 +58,8 @@ function queryCouponsNotGroup(timeout = 0) {
           'Cookie' : cookie,
           'Origin' : `https://m.jr.jd.com`,
           'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.get(url, async(err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          if (data.resultData.result.code !== "0000") {
-            cookieExpire = true
-            return
-          }
-          for (let i = data.resultData.floorInfo.length - 1;i >= 0 ;i--){
-            if (data.resultData.floorInfo[i].couponStatus === "2") {
-              if ($.prize["dailyCoupon"].match(/不符合活动参与规则/)) {
-                $.prize["dailyCoupon"] = "";
-                break;
-              }
-              await comReceiveCoupon(data.resultData.floorInfo[i].couponKey,100)
-            }
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-
-function comReceiveCoupon(couponKey,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/bt/h5/m/comReceiveCoupon?reqData=%7B%22businessLine%22:%22LQ_QYZX_SCQ%22,%22couponKey%22:%22${couponKey}%22%7D`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.get(url, (err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          if (data.resultData.result.code !== "0000") {
-            //$.prize["dailyCoupon"] += data.resultData.result.info
-            console.log(data.resultData.result.info)
-            return
-          }
-          $.prize["dailyCoupon"] += data.resultData.couponsVo.prizeAmount + '元;'
-          //console.log($.prize["dailyCoupon"])
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function queryCouponCenter(timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/hyqy/h5/m/queryCouponCenter?reqData=%7B%22timeStamp%22:%222020-12-08T22:55:51.289Z%22%7D`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
+          'Accept' : `application/json, text/plain, */*`,
+          'Referer' : `https://m.jr.jd.com/member/rightsCenter/`,
           'Host' : `ms.jr.jd.com`,
           'Accept-Encoding' : `gzip, deflate, br`,
           'Accept-Language' : `zh-cn`
@@ -300,17 +70,11 @@ function queryCouponCenter(timeout = 0) {
           if (printDetail) console.log(data);
           data = JSON.parse(data);
           //return
-          for (let i = data.resultData.data.length - 1;i >= 0 ;i--) {
-            if (data.resultData.data[i].name === "白条券") {
-              for (let j = 0;j < data.resultData.data[i].coupons.length;j++) {
-                //console.log(data.resultData.data[i].coupons[j].labels)
-                //console.log(data.resultData.data[i].coupons[j].id)
-                if (data.resultData.data[i].coupons[j].labels === "立减券") {
-                  await takeCouponPrize(data.resultData.data[i].coupons[j].id,parseFloat(data.resultData.data[i].coupons[j].briefAmount),820)
-                  //break
-                }
-              }
-              break
+          for (let i = data.resultData.floorInfo.length - 1;i >= 0 ;i--) {
+            if (data.resultData.floorInfo[i].marker === "立减券") {
+
+                console.log(`领取${data.resultData.floorInfo[i].text2}的券`)
+                await takeCouponPrize(data.resultData.floorInfo[i].couponKey,820)
             }
           }
         } catch (e) {
@@ -323,101 +87,33 @@ function queryCouponCenter(timeout = 0) {
   })
 }
 
-function queryAwardCenter(timeout = 0) {
+function takeCouponPrize(couponId,timeout = 0) {
   return new Promise((resolve) => {
     setTimeout( ()=>{
+      let reqData = {"couponKey" : couponId, "businessLine": "LQ_QYZX_SCQ"}
       let url = {
-        url : `https://pro.m.jd.com/jdjr/active/2gzjhRXJ5pSqEJyvMwRwoFtqcPFd/index.html`,
-        headers : {
-          'Referer' : `https://wqs.jd.com/my/iserinfo.html`,
-          'Cookie' : cookie
-        }
-      }
-      $.get(url, async (err, resp, data) => {
-        try {
-          if (printDetail) console.log(data.match(/(window.__react_data__ =) (.+)/)[2])
-          if (data.match(/(window.__react_data__ =) .+/)) {
-            data = JSON.parse(data.match(/(window.__react_data__ =) (.+)/)[2]);
-          } else {
-            return
-          }
-          for (let i in data.activityData.floorList) {
-            for (let j in data.activityData.floorList[i].couponList) {
-              if (data.activityData.floorList[i].couponList[j].status === "0" && data.activityData.floorList[i].couponList[j].scope.match(/扫一扫/)) {
-               await newBabelAwardCollection(data.activityData.floorList[i].couponList[j].cpId,parseFloat(data.activityData.floorList[i].couponList[j].val.match(/([1-9]\d*\.?\d*)|(0\.\d*[1-9])/)[0]))
-              }
-            }
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function newBabelAwardCollection(actKey,briefAmount,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let body = { "activityId" : "2gzjhRXJ5pSqEJyvMwRwoFtqcPFd", "scene" : 3, "actKey" : actKey }
-      let url = {
-        url: `https://api.m.jd.com/client.action?functionId=newBabelAwardCollection&body=${encodeURI(JSON.stringify(body))}&client=wh5`,
+        url: `https://ms.jr.jd.com/gw/generic/bt/h5/m/comReceiveCoupon?reqData=${encodeURI(JSON.stringify(reqData))}`,
         headers: {
           'Cookie' : cookie,
           'Origin' : `https://m.jr.jd.com`,
           'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://pro.m.jd.com/jdjr/active/2gzjhRXJ5pSqEJyvMwRwoFtqcPFd/index.html`,
-          'Host' : `api.m.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.get(url, async(err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          //console.log(data);
-          data = JSON.parse(data);
-          if (data.subCode === "0") {
-            $.prize["dailyCoupon"] += briefAmount.toFixed(1) + '元;'
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function takeCouponPrize(couponId,briefAmount,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let reqData = {"couponId" : couponId,"riskInfo":{"eid" : randomWord(false,90).toUpperCase(),"fp":randomWord(false,32).toLowerCase() ,"appId":"JDJR-App" } }
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/hyqy/h5/m/takePrize?reqData=${encodeURI(JSON.stringify(reqData))}`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
+          'Accept' : `application/json, text/plain, */*`,
+          'Referer' : `https://m.jr.jd.com/member/rightsCenter/`,
           'Host' : `ms.jr.jd.com`,
           'Accept-Encoding' : `gzip, deflate, br`,
           'Accept-Language' : `zh-cn`
         }
       }
-      //console.log(url.url)
+
       $.get(url, async(err, resp, data) => {
         try {
           if (printDetail) console.log(data);
           data = JSON.parse(data);
-          if (data.resultData.code === "0000") {
-            $.prize["dailyCoupon"] += briefAmount.toFixed(1) + '元;'
-          }
+        //   if (data.resultData.result.code === "0000") {
+        //     console.log(data.resultData.result.info)
+        //   }
+          console.log(data.resultData.result.info)
+
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -426,102 +122,6 @@ function takeCouponPrize(couponId,briefAmount,timeout = 0) {
       })
     },timeout)
   })
-}
-
-
-function gateFloorById(timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/hy/h5/m/gateFloorById?reqData=%7B%22pageSize%22%3A1000%2C%22version%22%3A%221.0%22%2C%22timeStamp%22%3A1607467849952%7D`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      $.get(url, async(err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          for (let i = 0;i < data.resultData.data.data.length;i++) {
-            if (lackCoin) break
-            if (data.resultData.data.data[i].name.match(/白条.*?立减/) && data.resultData.data.data[i].exchangeStatus === 1) {
-              //console.log(data.resultData.data.data[i].name.match(/([1-9]\d*\.?\d*)|(0\.\d*[1-9])/)[0])
-              //console.log(data.resultData.data.data[i].amount)
-              //console.log(data.resultData.data.data[i].productId)
-              if (data.resultData.data.data[i].amount < 50){
-                await gateExchange(data.resultData.data.data[i].productId,parseFloat(data.resultData.data.data[i].name.match(/([1-9]\d*\.?\d*)|(0\.\d*[1-9])/)[0]),3000)
-              }
-            }
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function gateExchange(productId,briefAmount,timeout = 0) {
-  return new Promise((resolve) => {
-    setTimeout( ()=>{
-      let reqData = {"productId" : productId,"channel":"gcmall-floorId-30","appType":"JR_APP" }
-      let url = {
-        url: `https://ms.jr.jd.com/gw/generic/hy/h5/m/gateExchange?reqData=${encodeURI(JSON.stringify(reqData))}`,
-        headers: {
-          'Cookie' : cookie,
-          'Origin' : `https://m.jr.jd.com`,
-          'Connection' : `keep-alive`,
-          'Accept' : `application/json`,
-          'Referer' : `https://m.jr.jd.com/`,
-          'Host' : `ms.jr.jd.com`,
-          'Accept-Encoding' : `gzip, deflate, br`,
-          'Accept-Language' : `zh-cn`
-        }
-      }
-      //console.log(url.url)
-      $.get(url, async(err, resp, data) => {
-        try {
-          if (printDetail) console.log(data);
-          data = JSON.parse(data);
-          if (data.resultData.code === "0000") {
-            $.prize["dailyCoupon"] += briefAmount.toFixed(1) + '元;'
-          } else if (data.resultData.code === "2906") {
-            lackCoin = true
-          } else {
-            console.log(data.resultData.msg)
-          }
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve()
-        }
-      })
-    },timeout)
-  })
-}
-
-function randomWord(randomFlag, min, max){
-  let str = "",
-    range = min,
-    arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-  // 随机产生
-  if(randomFlag){
-    range = Math.round(Math.random() * (max-min)) + min;
-  }
-  for(let i=0; i<range; i++){
-    pos = Math.round(Math.random() * (arr.length-1));
-    str += arr[pos];
-  }
-  return str;
 }
 
 function msgShow() {
