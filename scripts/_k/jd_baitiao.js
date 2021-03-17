@@ -35,9 +35,7 @@ if ($.isNode()) {
         $.msg($.name, '提示：请先获取cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/', {"open-url": "https://bean.m.jd.com/"});
         continue;
       }
-      await Promise.all([
-        queryCouponCenter(),
-      ])
+      await queryCouponCenter()
     //   await msgShow();
     }
   }
@@ -70,13 +68,14 @@ function queryCouponCenter(timeout = 0) {
           if (printDetail) console.log(data);
           data = JSON.parse(data);
           //return
+          var list = [];
           for (let i = data.resultData.floorInfo.length - 1;i >= 0 ;i--) {
             if (data.resultData.floorInfo[i].marker === "立减券") {
-
+              list.push(takeCouponPrize(data.resultData.floorInfo[i].couponKey,data.resultData.floorInfo[i].text2,820))
                 // console.log(`领取${data.resultData.floorInfo[i].text2}的券`)
-                takeCouponPrize(data.resultData.floorInfo[i].couponKey,data.resultData.floorInfo[i].text2,820)
             }
           }
+          await Promise.all(list)
         } catch (e) {
           $.logErr(e, resp);
         } finally {
