@@ -73,8 +73,8 @@ function queryCouponCenter(timeout = 0) {
           for (let i = data.resultData.floorInfo.length - 1;i >= 0 ;i--) {
             if (data.resultData.floorInfo[i].marker === "立减券") {
 
-                console.log(`领取${data.resultData.floorInfo[i].text2}的券`)
-                await takeCouponPrize(data.resultData.floorInfo[i].couponKey,820)
+                // console.log(`领取${data.resultData.floorInfo[i].text2}的券`)
+                takeCouponPrize(data.resultData.floorInfo[i].couponKey,data.resultData.floorInfo[i].text2,820)
             }
           }
         } catch (e) {
@@ -87,7 +87,7 @@ function queryCouponCenter(timeout = 0) {
   })
 }
 
-function takeCouponPrize(couponId,timeout = 0) {
+function takeCouponPrize(couponId,text,timeout = 0) {
   return new Promise((resolve) => {
     setTimeout( ()=>{
       let reqData = {"couponKey" : couponId, "businessLine": "LQ_QYZX_SCQ"}
@@ -112,7 +112,7 @@ function takeCouponPrize(couponId,timeout = 0) {
         //   if (data.resultData.result.code === "0000") {
         //     console.log(data.resultData.result.info)
         //   }
-          console.log(data.resultData.result.info)
+          console.log(text + data.resultData.result.info)
 
         } catch (e) {
           $.logErr(e, resp);
