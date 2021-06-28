@@ -3,8 +3,6 @@
     "description": "QX Task Gallery by karl",
     "task": [
         "20 13 * * 6 https://raw.githubusercontent.com/LXK9301/jd_scripts/master/jd_get_share_code.js, tag=获取互助码, enabled=true",
-        "0 8,9,10 * * * https://raw.githubusercontent.com/LXK9301/jd_scripts/master/jd_nian.js, tag=京东炸年兽🧨, enabled=true",
-        "20 * * * * https://raw.githubusercontent.com/LXK9301/jd_scripts/master/jd_nianCollect.js, tag=京东炸年兽收集🧨, enabled=true",
         "0 9 * * * https://raw.githubusercontent.com/NobyDa/Script/master/52pojie-DailyBonus/52pojie.js, tag=吾爱破解, img-url=https://raw.githubusercontent.com/Orz-3/task/master/52pj.png, enabled=false",
         "0 9 * * * https://raw.githubusercontent.com/NobyDa/Script/master/BDTieBa-DailyBonus/TieBa.js, tag=百度贴吧, img-url=https://raw.githubusercontent.com/Orz-3/task/master/tieba.png, enabled=false",
         "0 9 * * * https://raw.githubusercontent.com/NobyDa/Script/master/Bilibili-DailyBonus/Manga.js, tag=哔哩哔哩漫画, img-url=https://raw.githubusercontent.com/Orz-3/task/master/manga.png, enabled=false",
@@ -149,6 +147,8 @@
         "7 0 * * * https://raw.githubusercontent.com/iisams/Scripts/master/liwo/7days.js,tag=梨涡签到领现金, img-url=https://raw.githubusercontent.com/Orz-3/task/master/liwo.png, enabled=false",
         "5 8 * * * https://raw.githubusercontent.com/iisams/Scripts/master/liwo/jdtqz.js, tag= 京东特权值, img-url=https://raw.githubusercontent.com/Orz-3/task/master/jd.png, enabled=false",
         "0 8 * * * https://github.com/congcong0806/surge-list/raw/master/Script/daysmatter.js, tag= 倒数日, img-url=https://raw.githubusercontent.com/Orz-3/task/master/daysmatter.png, enabled=false",
-        "0 9 * * * https://gitee.com/passerby-b/javascript/raw/master/unipay.js, tag=云闪付, img-url=https://raw.githubusercontent.com/Orz-3/task/master/unipay.png, enabled=false"
+        "0 9 * * * https://gitee.com/passerby-b/javascript/raw/master/unipay.js, tag=云闪付, img-url=https://raw.githubusercontent.com/Orz-3/task/master/unipay.png, enabled=false",
+        "45 4 8 * * * https://raw.githubusercontent.com/evilbutcher/Quantumult_X/master/check_in/glados/checkin_env.js, tag=机场签到, img-url=https://raw.githubusercontent.com/Orz-3/Task/master/airport.png, enabled=true",
+        "0 5 8 * * * https://raw.githubusercontent.com/evilbutcher/Quantumult_X/master//check_in/glados/checkincookie_env.js, tag=机场签到Cookie版, img-url=https://raw.githubusercontent.com/58xinian/icon/master/glados.png, enabled=false"
     ]
 }

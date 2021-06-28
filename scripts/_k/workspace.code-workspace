@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../../FlutterProject/dart_test"
+		},
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
